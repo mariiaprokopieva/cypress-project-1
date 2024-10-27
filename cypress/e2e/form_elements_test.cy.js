@@ -6,8 +6,7 @@ describe('Form elements', () => {
         cy.visit('https://techglobal-training.com/frontend/project-1');
       });
 
-      it('')
-
+      
     it('Validate the Contact Us information', () => {
 
         const contactInfo = [ 'Contact Us', '2800 S River Rd Suite 310, Des Plaines, IL 60018', 'info@techglobalschool.com', '(224) 580-2150' ];

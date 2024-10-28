@@ -6,8 +6,8 @@ describe('Form elements', () => {
         cy.visit('https://techglobal-training.com/frontend/project-1');
       });
 
-      
-    it('Validate the Contact Us information', () => {
+
+    it('Test Case 01 - Validate the Contact Us information', () => {
 
         const contactInfo = [ 'Contact Us', '2800 S River Rd Suite 310, Des Plaines, IL 60018', 'info@techglobalschool.com', '(224) 580-2150' ];
 
@@ -16,69 +16,102 @@ describe('Form elements', () => {
         });
     });
 
-    it('Input field visible and required validation', () => {
 
-        const required = [ 'have.attr', 'have.attr', 'not.have.attr', 'not.have.attr', 'not.have.attr', 'have.attr', 'not.have.attr', 'not.have.attr', 'have.attr' ];
-
-        cy.get('.field input,.textarea').each(($el, index) => {
-            cy.wrap($el).should('be.visible')
-            .should(required[index], 'required');
-        });
-    });
-
-    it('Label validation', () => {
-
-        const label = ['Full name *', 'Gender *', 'Address', 'Email *', 'Phone', 'Message', ' I give my consent to be contacted.'];
-
-        cy.get('.field > label,.control > .label,label.checkbox').each(($el, index) => {
-            cy.wrap($el).should('have.text', label[index]);
-        });
-    });
-
-    it('Placeholder validation', () => {
+    it('Test Case 02 - Validate the Full name input box', () => {
         
-        const placeholder = [ 'Enter your full name', 'Enter your address', 'Enter your email', 'Enter your phone number', 'Type your message here...' ];
+        cy.get(':nth-child(1) > .control > .input').should('be.visible')
+        .and('have.attr', 'required');
 
-        cy.get('.field input:not([type="radio"],[type="checkbox"]),.textarea').each(($el, index) => {
-            cy.wrap($el).should('have.attr', 'placeholder', placeholder[index]);
-        });
+        cy.get('[for="name"]').should('have.text', 'Full name *');
+
+        cy.get(':nth-child(1) > .control > .input').should('have.attr', 'placeholder', 'Enter your full name');
+
     });
 
-    const genders = [ 'Male', 'Female', 'Prefer not to disclose' ];
 
-    it('Gender options validation', () => {
+    it('Test Case 03 - Validate the Gender radio button', () => {
+
+        const genders = [ 'Male', 'Female', 'Prefer not to disclose'];
+
+        cy.get('.control > .label').should('have.text', 'Gender *');
+
+        cy.get(':nth-child(2) > .mr-1').should('have.attr', 'required');
 
         cy.get('.radio').each(($el, index) => {
             cy.wrap($el).should('have.text', genders[index]);
-
         });
 
-        cy.contains('.radio', 'Male').should('not.be.checked');
-        
-
-    });
-
-    it('Radio buttons validation', () => { // How to check other radio buttons are unchecked when one is checked?
-
-        cy.get('.radio>input').each(($el) => {
-            cy.wrap($el).should('not.be.checked').click().should('be.checked');
-
-            const uncheckedOptions = genders.filter(x => x !== $el);
-
-            for(const gender of uncheckedOptions) {
-                cy.contains('.radio', gender).should('not.be.checked');
-            }
-            
+        cy.get('.radio .mr-1').each(($el) => {
+            cy.wrap($el).should('not.be.checked');
         });
 
+        const checkOptionAndValidate = (optionToCheck, expectedTexts) => {
+
+            cy.contains(optionToCheck).find('input').check().should('be.checked');
+    
+            expectedTexts.filter(option => option !== optionToCheck).forEach(uncheckedOptions => {
+                cy.contains(uncheckedOptions).find('input').should('not.be.checked');
+            });
+        }
+
+        checkOptionAndValidate('Male', genders);
+        checkOptionAndValidate('Female', genders);
+
     });
 
-    it('Checkbox validation', () => {
-        
-        cy.get('.checkbox>input').click().should('be.checked').click().should('not.be.checked');
 
-    });
+    it('Test Case 04 - Validate the Address input box', () => {
 
+        cy.get(':nth-child(3) > .control > .input'),should('be.visible')
+
+    })
+
+    const arr = [
+        {
+            validationTitle: 'Validate the Address input box',
+            locator: ':nth-child(3) > .control > .input',
+            inputBox: 'displayed',
+            label: 'Address',
+            placeholder: 'Enter your address*',
+            isRequired: false
+        },
+        {
+            validationTitle: 'Validate the Email input box',
+            locator: ':nth-child(4) > .control > .input',
+            inputBox: 'displayed',
+            label: 'Email *',
+            placeholder: 'Enter your email',
+            isRequired: true
+        },
+        {
+            validationTitle: 'Validate the Phone input box',
+            locator: ':nth-child(5) > .control > .input',
+            inputBox: 'displayed',
+            label: 'Phone',
+            placeholder: 'Enter your phone number',
+            isRequired: false
+        },
+        {
+            validationTitle: 'Validate the Message text area',
+            locator: '.textarea',
+            inputBox: 'displayed',
+            label: 'Message',
+            placeholder: 'Type your message here…',
+            isRequired: false
+        }
+    ];
+
+    arr.forEach((el) => {
+        it(el.validationTitle, () => {
+            cy.get(el.locator).should('be.visible')
+            .and('have.attr', 'required', el.isRequired)
+            .and('have.attr', 'placeholder', el.placeholder);
+        })
+    })
+
+
+
+    
     it('Submit button validation', () => {
         
         cy.get('.is-link').should('be.visible')

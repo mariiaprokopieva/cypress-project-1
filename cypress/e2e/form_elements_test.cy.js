@@ -19,7 +19,7 @@ describe('Form elements', () => {
 
     it('Test Case 02 - Validate the Full name input box', () => {
         
-        cy.get(':nth-child(1) > .control > .input').should('be.visible')
+        cy.get(':nth-child(1) > .control > input').should('be.visible')
         .and('have.attr', 'required');
 
         cy.get('[for="name"]').should('have.text', 'Full name *');
@@ -59,60 +59,61 @@ describe('Form elements', () => {
 
     });
 
-
-    it('Test Case 04 - Validate the Address input box', () => {
-
-        cy.get(':nth-child(3) > .control > .input'),should('be.visible')
-
-    })
-
     const arr = [
         {
-            validationTitle: 'Validate the Address input box',
+            validationTitle: 'Test Case 04 - Validate the Address input box',
             locator: ':nth-child(3) > .control > .input',
-            inputBox: 'displayed',
             label: 'Address',
-            placeholder: 'Enter your address*',
+            placeholder: 'Enter your address',
             isRequired: false
         },
         {
-            validationTitle: 'Validate the Email input box',
+            validationTitle: 'Test Case 05 - Validate the Email input box',
             locator: ':nth-child(4) > .control > .input',
-            inputBox: 'displayed',
             label: 'Email *',
             placeholder: 'Enter your email',
             isRequired: true
         },
         {
-            validationTitle: 'Validate the Phone input box',
+            validationTitle: 'Test Case 06 - Validate the Phone input box',
             locator: ':nth-child(5) > .control > .input',
-            inputBox: 'displayed',
             label: 'Phone',
             placeholder: 'Enter your phone number',
             isRequired: false
         },
         {
-            validationTitle: 'Validate the Message text area',
+            validationTitle: 'Test Case 07 - Validate the Message text area',
             locator: '.textarea',
-            inputBox: 'displayed',
             label: 'Message',
-            placeholder: 'Type your message here…',
+            placeholder: 'Type your message here...',
             isRequired: false
         }
     ];
 
-    arr.forEach((el) => {
-        it(el.validationTitle, () => {
-            cy.get(el.locator).should('be.visible')
-            .and('have.attr', 'required', el.isRequired)
-            .and('have.attr', 'placeholder', el.placeholder);
-        })
-    })
+    arr.forEach((arrEl) => {
+        it(arrEl.validationTitle, () => {
+            cy.get(arrEl.locator).should('be.visible')
+            .and(($el) => {
+                if(arrEl.isRequired) expect($el).to.have.attr('required');
+                else expect($el).to.not.have.attr('required'); 
+            })
+            .and('have.attr', 'placeholder', arrEl.placeholder)
+            .parent().parent().find('label').should('have.text', arrEl.label);
+        });
+    });
 
 
+    it('Test Case 08 - Validate the Consent checkbox', () => {
+        cy.get('[type="checkbox"]').should('be.enabled')
+        .click().should('be.checked')
+        .click().should('not.be.checked')
+        .parent().should('have.text', ' I give my consent to be contacted.')
+        .children()
+        .should('have.attr', 'required');
+    });
 
-    
-    it('Submit button validation', () => {
+
+    it('Test Case 09 - Validate the SUBMIT button', () => {
         
         cy.get('.is-link').should('be.visible')
         .should('have.text', 'SUBMIT').click();
@@ -120,8 +121,26 @@ describe('Form elements', () => {
         cy.on("uncaught:exception", () => {
             return false;
         });
-
     });
+
+
+    it('Test Case 10 - Validate the form submission', () => {
+
+        const testData = ['Mariia Prokopieva', 'Montreal, QC, Canada', 'mariiaprokopieva@gmail.com', '123-111-1212', 'Thank you and have a great day!']
+
+        cy.get('.input,.textarea').each(($el, index) => {
+            cy.wrap($el).type(testData[index]);
+        });
+        cy.get(':nth-child(3) > .mr-1').check();
+        cy.get('[type="checkbox"]').click();
+
+        cy.get('.is-link').click();
+        cy.on("uncaught:exception", () => {
+            return false;
+        });
+
+        cy.get('.mt-5').should('have.text', 'Thanks for submitting!');
+    })
 
     });
 
